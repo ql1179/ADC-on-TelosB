@@ -2,7 +2,7 @@
 #include "lib/sensors.h"
 #include "dev/sky-sensors.h"
 #include "dev/light-sensor.h"
-#include "dev/temperature-sensor.h"
+// #include "dev/temperature-sensor.h"
 #include <stdio.h>
 
 PROCESS(adc_acq,"ADC Acquisition");
