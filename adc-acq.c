@@ -1,7 +1,7 @@
 #include "contiki.h"
 #include "lib/sensors.h"
 #include "dev/sky-sensors.h"
-#include "dev/light-sensor.h"
+#include "dev/adc-sensor.h"
 #include "cfs/cfs.h"
 #include "cfs/cfs-coffee.h"
 #include <stdio.h>
@@ -32,20 +32,14 @@ PROCESS_THREAD(adc_acq,ev,data)
       #endif	      
 
 
-
-
-
-
-
-
-      while(seq <= 100000)
+      while(seq <= 200000)
       {
 	   etimer_set(&et, CLOCK_SECOND * 0.1);
-	   SENSORS_ACTIVATE(light_sensor);
+	   SENSORS_ACTIVATE(adc_sensor);
 	   PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
 	   seq++;
 
-           val = light_sensor.value(LIGHT_SENSOR_TOTAL_SOLAR);
+           val = adc_sensor.value(0);
       	   if(val != -1) {
 		//write
 	      fd = cfs_open(FILENAME, CFS_WRITE + CFS_APPEND + CFS_READ);
@@ -65,7 +59,7 @@ PROCESS_THREAD(adc_acq,ev,data)
               cfs_close(fd);
            }                      
 	   etimer_reset(&et);
-    	   SENSORS_DEACTIVATE(light_sensor);
+    	   SENSORS_DEACTIVATE(adc_sensor);
       } //end of while
     
       PROCESS_END();
