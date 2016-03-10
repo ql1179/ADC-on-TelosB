@@ -54,7 +54,7 @@ PROCESS_THREAD(adc_acq,ev,data) {
 	        cfs_close(fd);
 	        return 0;
               }
-              printf("write success %f\n", record[0]);
+              printf("write success %u\n", record[0]);
               cfs_close(fd);
            }                      
 	   etimer_reset(&et);
