@@ -3,9 +3,10 @@
 #include "dev/sky-sensors.h"
 #include "dev/adc-sensor.h"
 
-#define INPUT_CHANNEL      1 << INCH_0
+#define INPUT_CHANNEL      (1 << INCH_0)|(1 << INCH_1)
 #define INPUT_REFERENCE     SREF_0
-#define DATA_MEM  ADC12MEM0
+#define VA_MEM  ADC12MEM0
+#define VB_MEM  ADC12MEM1
 
 const struct sensors_sensor adc_sensor;
 
@@ -13,7 +14,16 @@ const struct sensors_sensor adc_sensor;
 static int
 value(int type)
 {
-  return DATA_MEM;
+   switch(type) {
+    /* Photosynthetically Active Radiation. */
+  case 0:
+    return VA_MEM;
+
+    /* Total Solar Radiation. */
+  case 1:
+    return VB_MEM;
+  }
+  return 0;
 }
 /*---------------------------------------------------------------------------*/
 static int
