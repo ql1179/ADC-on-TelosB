@@ -10,7 +10,7 @@ PROCESS(adc_acq,"ADC Acquisition");
 AUTOSTART_PROCESSES(&adc_acq);
 
 #define FILENAME1 "va"
-#define FILENAME1 "vb"
+#define FILENAME2 "vb"
 
 #ifndef NEED_FORMATTING
 #define NEED_FORMATTING 0
