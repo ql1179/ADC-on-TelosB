@@ -43,7 +43,7 @@ PROCESS_THREAD(adc_acq,ev,data)
           printf("Reading finishes.\n");
           break;
         }
-        else if (r != sizeof(rread)) {
+        else if (r != sizeof(rread)) { // If we don't finish all 200,000 samples, it will likely end here.
 	  printf("Reading ends abnormally.\n");
 	  break;
         }

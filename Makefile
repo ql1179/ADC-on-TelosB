@@ -1,5 +1,4 @@
-CONTIKI_PROJECT = adc-acq
-all: $(CONTIKI_PROJECT)
+all: adc-acq read-file
 
 CONTIKI = /home/qi/contiki
 include $(CONTIKI)/Makefile.include
