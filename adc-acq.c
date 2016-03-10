@@ -9,7 +9,8 @@
 PROCESS(adc_acq,"ADC Acquisition");
 AUTOSTART_PROCESSES(&adc_acq);
 
-#define FILENAME "data"
+#define FILENAME1 "va"
+#define FILENAME1 "vb"
 
 #ifndef NEED_FORMATTING
 #define NEED_FORMATTING 0
@@ -30,10 +31,11 @@ PROCESS_THREAD(adc_acq,ev,data) {
       #if NEED_FORMATTING
 	cfs_coffee_format();
       #endif	      
-      cfs_remove(FILENAME);
+      cfs_remove(FILENAME1);
+      cfs_remove(FILENAME2);
 
-      while(seq <= 200000) { // sampling will terminate when reach 200, 000 
-	   etimer_set(&et, CLOCK_SECOND * 0.01); // time interval is 0.01, which is 100Hz.
+      while(seq <= 100000) { // sampling will terminate when reach 200, 000 
+	   etimer_set(&et, CLOCK_SECOND * 0.1); // time interval is 0.01, which is 100Hz.
 	   SENSORS_ACTIVATE(adc_sensor);
 	   PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
 	   seq++;
@@ -41,22 +43,41 @@ PROCESS_THREAD(adc_acq,ev,data) {
            val = adc_sensor.value(0);
       	   if(val != -1) {
 		//write
-	      fd = cfs_open(FILENAME, CFS_WRITE + CFS_APPEND + CFS_READ);
+	      fd = cfs_open(FILENAME1, CFS_WRITE + CFS_APPEND + CFS_READ);
 	      if(fd < 0) {
-		printf("failed to open %s\n", FILENAME);
+		printf("failed to open\n");
 		return 0;
       	      }   
       	      record[0] = val; // 12bit reading
               record[1] = 0; // zero padding
               r = cfs_write(fd, record, sizeof(record));
               if (r != sizeof(record)) {
-	        printf("failed to write %d bytes to %s\n", (int)sizeof(record), FILENAME);
+	        printf("failed to write\n");
 	        cfs_close(fd);
 	        return 0;
               }
-              printf("write success %u\n", record[0]);
+              printf("Va: %u\n", record[0]);
               cfs_close(fd);
-           }                      
+           }     
+           val = adc_sensor.value(1);
+      	   if(val != -1) {
+		//write
+	      fd = cfs_open(FILENAME2, CFS_WRITE + CFS_APPEND + CFS_READ);
+	      if(fd < 0) {
+		printf("failed to open\n");
+		return 0;
+      	      }   
+      	      record[0] = val; // 12bit reading
+              record[1] = 0; // zero padding
+              r = cfs_write(fd, record, sizeof(record));
+              if (r != sizeof(record)) {
+	        printf("failed to write\n");
+	        cfs_close(fd);
+	        return 0;
+              }
+              printf("Vb: %u\n", record[0]);
+              cfs_close(fd);
+           }                     
 	   etimer_reset(&et);
     	   SENSORS_DEACTIVATE(adc_sensor);
       } //end of while
