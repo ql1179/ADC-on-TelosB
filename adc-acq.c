@@ -3,6 +3,7 @@
 #include "dev/adc-sensor.h"
 #include "cfs/cfs.h"
 #include "cfs/cfs-coffee.h"
+#include "dev/leds.h"
 #include <stdio.h>
 
 PROCESS(adc_acq,"ADC Acquisition");
@@ -25,6 +26,7 @@ PROCESS_THREAD(adc_acq,ev,data) {
 
 
       PROCESS_BEGIN();
+      leds_toggle(LEDS_YELLOW);
       seq = 0;
       ADC12IE = 0;
       #if NEED_FORMATTING
@@ -36,13 +38,12 @@ PROCESS_THREAD(adc_acq,ev,data) {
 	printf("failed to open %s\n", FILENAME);
 	return 0;
       }   
-      SENSORS_ACTIVATE(adc_sensor);
-      while(seq <= 200000) { // sampling will terminate when reach 200, 000 
+      while(seq <= 30000) { // sampling will terminate when reach 200, 000 
 	   etimer_set(&et, CLOCK_SECOND * 0.01); // time interval is 0.01, which is 100Hz.
-	//   SENSORS_ACTIVATE(adc_sensor);
-	   PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
+	   SENSORS_ACTIVATE(adc_sensor);
+           leds_toggle(LEDS_GREEN);
 	   seq++;
-	   
+	   PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
 
            val = adc_sensor.value(0);
       	   if(val != -1) {
@@ -52,20 +53,20 @@ PROCESS_THREAD(adc_acq,ev,data) {
               record[1] = 0; // zero padding
               r = cfs_write(fd, record, sizeof(record));
               if (r != sizeof(record)) {
-	        printf("failed to write %d bytes to %s\n", (int)sizeof(record), FILENAME);
+	        printf("failed to write at seq %lu\n", seq);
 	        cfs_close(fd);
 	        return 0;
               }
               printf("write success %u\n", record[0]);
               
            }  
-
- //        SENSORS_DEACTIVATE(adc_sensor);                    
+	   SENSORS_DEACTIVATE(adc_sensor);  
+           leds_toggle(LEDS_GREEN);                    
 	   etimer_reset(&et);
 
       } //end of while
       cfs_close(fd);  
-	SENSORS_DEACTIVATE(adc_sensor);  
+      leds_toggle(LEDS_RED);
       PROCESS_END();
 
 }

@@ -2,6 +2,8 @@
 #include "contiki.h"
 #include "cfs/cfs.h"
 #include "cfs/cfs-coffee.h"
+#include "lib/sensors.h"
+#include "dev/leds.h"
 #include <stdio.h>
 
 PROCESS(adc_acq,"ADC Acquisition");
@@ -20,6 +22,7 @@ PROCESS_THREAD(adc_acq,ev,data)
       static unsigned rread[2];
 
       PROCESS_BEGIN();
+      leds_toggle(LEDS_GREEN);
       #if NEED_FORMATTING
 	cfs_coffee_format();
       #endif	    
@@ -51,6 +54,7 @@ PROCESS_THREAD(adc_acq,ev,data)
       }
       cfs_close(fd);
       cfs_remove(FILENAME);
+      leds_toggle(LEDS_GREEN);
       PROCESS_END();
 
 }
