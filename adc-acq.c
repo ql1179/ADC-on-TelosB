@@ -26,7 +26,6 @@ PROCESS_THREAD(adc_acq,ev,data) {
 
 
       PROCESS_BEGIN();
-      leds_toggle(LEDS_YELLOW);
       seq = 0;
       ADC12IE = 0;
       #if NEED_FORMATTING
@@ -41,7 +40,8 @@ PROCESS_THREAD(adc_acq,ev,data) {
       while(seq <= 30000) { // sampling will terminate when reach 200, 000 
 	   etimer_set(&et, CLOCK_SECOND * 0.01); // time interval is 0.01, which is 100Hz.
 	   SENSORS_ACTIVATE(adc_sensor);
-           leds_toggle(LEDS_GREEN);
+ 	   if (seq % 50 == 0)
+		leds_toggle(LEDS_GREEN);
 	   seq++;
 	   PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
 
@@ -60,8 +60,7 @@ PROCESS_THREAD(adc_acq,ev,data) {
               printf("write success %u\n", record[0]);
               
            }  
-	   SENSORS_DEACTIVATE(adc_sensor);  
-           leds_toggle(LEDS_GREEN);                    
+	   SENSORS_DEACTIVATE(adc_sensor);                    
 	   etimer_reset(&et);
 
       } //end of while
