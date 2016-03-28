@@ -65,7 +65,11 @@ PROCESS_THREAD(adc_acq,ev,data) {
 
       } //end of while
       cfs_close(fd);  
-      leds_toggle(LEDS_RED);
+      leds_on(LEDS_RED);
+      etimer_set(&et, CLOCK_SECOND * 3);
+      PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
+      leds_toggle(LEDS_GREEN);
+      leds_off(LEDS_RED);
       PROCESS_END();
 
 }
