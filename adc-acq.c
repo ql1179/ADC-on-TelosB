@@ -43,7 +43,6 @@ PROCESS_THREAD(adc_acq,ev,data) {
  	   if (seq % 50 == 0)
 		leds_toggle(LEDS_GREEN);
 	   seq++;
-	   PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
 
            val = adc_sensor.value(0);
       	   if(val != -1) {
@@ -60,7 +59,8 @@ PROCESS_THREAD(adc_acq,ev,data) {
               printf("write success %u\n", record[0]);
               
            }  
-	   SENSORS_DEACTIVATE(adc_sensor);                    
+	   SENSORS_DEACTIVATE(adc_sensor);
+	   PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));                    
 	   etimer_reset(&et);
 
       } //end of while
